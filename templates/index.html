@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>AI</title>
+</head>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f1f7f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    }
+    #inputImage {
+    margin-top: 20px;
+    padding: 10px;
+    border: none;
+    background-color: #957dad;
+    color: white;
+    }
+    #target {
+    max-width: 400px;
+    }
+    #predictBtn {
+    margin-top: 20px;
+    padding: 10px;
+    border: none;
+    background-color: #957dad;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    }
+</style>
+<body>
+    <img id="target" />
+    <input id="inputImage" type="file" />
+    <button id="predictBtn">Распознать</button>
+    <p id="prediction"></p>
+    <p id="score"></p>
+    <script>
+        function showImage(src, target) {
+        var fr = new FileReader();
+        fr.onload = function (e) {
+        target.src = this.result;
+        };
+        src.addEventListener("change", function () {
+        fr.readAsDataURL(src.files[0]);
+        });
+        }
+        var src = document.getElementById("inputImage");
+        var target = document.getElementById("target");
+        showImage(src, target);
+        function predict() {
+        const fileInput = document.getElementById('inputImage');
+        var formData = new FormData();
+        formData.append('image', fileInput.files[0])
+        console.log(formData)
+        fetch("/predict", {
+        method: "POST",
+        body: formData,
+        })
+        .then((response) => response.json())
+        .then((data) => {
+        document.getElementById("prediction").innerText =data.predictions;
+        })
+        .catch((error) => {
+            console.error("Ошибка:", error);
+            });
+            };
+            document.getElementById("predictBtn").addEventListener("click", predict);
+        </script>
+    </body>
+</html>
